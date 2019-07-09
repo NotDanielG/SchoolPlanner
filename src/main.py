@@ -35,6 +35,18 @@ if __name__ == '__main__':
     calendarFrame = Frame(calendarPane, bg="red", width=770, height=570)
     calendarFrame.place(x=15, y=100)
 
+    calX = 15
+    calY = 75
+
+    dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    for name in dayNames:
+        test = Frame(calendarPane, bg="green", width=110, height=20)
+        test.place(x=calX, y=calY)
+        label = Label(test, text=name)
+        label.pack(side=RIGHT, expand=0)
+        #label.place(x=60, y=0)
+        calX += 110
+
     count = 35
     calX = 0
     calY = 0
