@@ -2,6 +2,9 @@ from tkinter import *
 import calendar
 import pickle
 
+def optionChanged(*args):
+    print(monthMenu.getvar())
+
 if __name__ == '__main__':
     root = Tk()
     root.geometry("1280x720")
@@ -62,13 +65,18 @@ if __name__ == '__main__':
             calX = 0
         count += -1
 
-    monthChoice = []
+    monthChoice = {}
+    count = 1
     for month in calendar.month_name:
         if month != "":
-            monthChoice.append(month)
+            monthChoice[month] = count
+            count += 1
     selectedMonth = StringVar()
-    selectedMonth.set(monthChoice[0])
+    selectedMonth.set(list(monthChoice.keys())[0])
+    selectedMonth.trace("w", optionChanged)
+
     monthMenu = OptionMenu(calendarPane, selectedMonth, *monthChoice)
     monthMenu.place(x=335, y=10)
     monthMenu.config(width=10, indicator=0)
+
     mainloop()
