@@ -40,11 +40,12 @@ if __name__ == '__main__':
 
     dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     for name in dayNames:
-        test = Frame(calendarPane, bg="green", width=110, height=20)
+        test = Frame(calendarPane, bg="green", width=110,height=25)
         test.place(x=calX, y=calY)
         label = Label(test, text=name)
-        label.pack(side=RIGHT, expand=0)
-        #label.place(x=60, y=0)
+        #label.pack(side="right")
+        label.place(x=60, y=0)
+        label.place(x=110-label.winfo_reqwidth())
         calX += 110
 
     count = 35
@@ -60,4 +61,14 @@ if __name__ == '__main__':
             calY += 114
             calX = 0
         count += -1
+
+    monthChoice = []
+    for month in calendar.month_name:
+        if month != "":
+            monthChoice.append(month)
+    selectedMonth = StringVar()
+    selectedMonth.set(monthChoice[0])
+    monthMenu = OptionMenu(calendarPane, selectedMonth, *monthChoice)
+    monthMenu.place(x=335, y=10)
+    monthMenu.config(width=10, indicator=0)
     mainloop()
