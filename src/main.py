@@ -3,7 +3,15 @@ import calendar
 import pickle
 
 def optionChanged(*args):
-    print(monthMenu.getvar())
+    print(monthChoice[selectedMonth.get()])
+    print(selectedYear.get())
+    print(selectedDay.get())
+
+    dayList = range(1, calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))[1])
+    #dayChange(dayList)
+
+def dayChange(*args):
+    print("1")
 
 if __name__ == '__main__':
     root = Tk()
@@ -76,7 +84,34 @@ if __name__ == '__main__':
     selectedMonth.trace("w", optionChanged)
 
     monthMenu = OptionMenu(calendarPane, selectedMonth, *monthChoice)
-    monthMenu.place(x=335, y=10)
+    monthMenu.place(x=315, y=10)
     monthMenu.config(width=10, indicator=0)
+
+    yearList = range(2019,2030)
+    yearChoice = {}
+    for year in yearList:
+        yearChoice[year] = year
+    selectedYear = StringVar()
+    selectedYear.set(list(yearChoice.keys())[0])
+    selectedYear.trace("w", optionChanged)
+
+    yearMenu = OptionMenu(calendarPane, selectedYear, *yearChoice)
+    yearMenu.place(x=455, y=10)
+    yearMenu.config(width=10, indicator=0)
+
+    #monthrange 0 = monday
+    dayList = range(1, calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))[1])
+    print(dayList)
+    dayChoice = {}
+    for day in dayList:
+        dayChoice[day] = day
+    selectedDay = IntVar()
+    selectedDay.set(list(dayChoice.keys())[0])
+    selectedDay.trace("w", dayChange)
+
+    dayMenu = OptionMenu(calendarPane, selectedDay, *dayChoice)
+    dayMenu.place(x=400, y=10)
+    dayMenu.config(width=5, indicator=0)
+
 
     mainloop()
