@@ -1,2 +1,2 @@
 # SummerPlanner
-GUI Application made by Python
+GUI Application made in Python
