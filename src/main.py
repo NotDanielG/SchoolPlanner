@@ -5,13 +5,27 @@ import pickle
 def optionChanged(*args):
     print(monthChoice[selectedMonth.get()])
     print(selectedYear.get())
-    print(selectedDay.get())
 
-    dayList = range(1, calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))[1])
-    #dayChange(dayList)
+    #print(args[0][0])
 
-def dayChange(*args):
-    print("1")
+    range = calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))
+    print(range)
+    cells = args[0]
+    counter = range[0] + 1
+    if counter >= 7:
+        counter = 0
+    j = 0
+    start = False
+    for cell in cells:
+        for child in cell.winfo_children():
+            child.destroy()
+        if j == counter and not start:
+            start = True
+            j = 1
+        if start and j <= range[1]:
+            label = Label(cell, text=str(j))
+            label.place(x=0, y=0)
+        j += 1
 
 if __name__ == '__main__':
     root = Tk()
@@ -82,7 +96,7 @@ if __name__ == '__main__':
             count += 1
     selectedMonth = StringVar()
     selectedMonth.set(list(monthChoice.keys())[0])
-    selectedMonth.trace("w", optionChanged)
+    selectedMonth.trace("w", lambda name, index, mode, dayCells=dayCells: optionChanged(dayCells))
 
     monthMenu = OptionMenu(calendarPane, selectedMonth, *monthChoice)
     monthMenu.place(x=315, y=10)
@@ -94,7 +108,7 @@ if __name__ == '__main__':
         yearChoice[year] = year
     selectedYear = StringVar()
     selectedYear.set(list(yearChoice.keys())[0])
-    selectedYear.trace("w", optionChanged)
+    selectedYear.trace("w", lambda name, index, mode, dayCells=dayCells: optionChanged(dayCells))
 
     yearMenu = OptionMenu(calendarPane, selectedYear, *yearChoice)
     yearMenu.place(x=455, y=10)
@@ -115,10 +129,9 @@ if __name__ == '__main__':
         if i == count and not start:
             start = True
             i = 1
-        if start and i < monRange[1]:
+        if start and i <= monRange[1]:
             label = Label(cell, text=str(i))
-            label.place(x=0,y=0)
-        i+=1
-
+            label.place(x=0, y=0)
+        i += 1
 
     mainloop()
