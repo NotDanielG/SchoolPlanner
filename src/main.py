@@ -54,19 +54,20 @@ if __name__ == '__main__':
         test = Frame(calendarPane, bg="green", width=110,height=25)
         test.place(x=calX, y=calY)
         label = Label(test, text=name)
-        #label.pack(side="right")
         label.place(x=60, y=0)
         label.place(x=110-label.winfo_reqwidth())
         calX += 110
 
-    count = 35
+    count = 34
     calX = 0
     calY = 0
+    dayCells = list()
     while count >= 0:
         test = Frame(calendarFrame, bg="blue", borderwidth=1, width=110, height=114)
         label = Label(test, text=str(35-count))
-        label.place(x=0,y=0)
+        label.place(x=0, y=0)
         test.place(x=calX, y=calY)
+        dayCells.append(test)
         calX += 110
         if count % 7 == 0 and count != 35:
             calY += 114
@@ -101,17 +102,23 @@ if __name__ == '__main__':
 
     #monthrange 0 = monday
     dayList = range(1, calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))[1])
-    print(dayList)
-    dayChoice = {}
-    for day in dayList:
-        dayChoice[day] = day
-    selectedDay = IntVar()
-    selectedDay.set(list(dayChoice.keys())[0])
-    selectedDay.trace("w", dayChange)
+    monRange = calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))
 
-    dayMenu = OptionMenu(calendarPane, selectedDay, *dayChoice)
-    dayMenu.place(x=400, y=10)
-    dayMenu.config(width=5, indicator=0)
+    count = monRange[0] + 1
+    if count >= 8:
+        count = 0
+    i = 0
+    start = False
+    for cell in dayCells:
+        for child in cell.winfo_children():
+            child.destroy()
+        if i == count and not start:
+            start = True
+            i = 1
+        if start and i < monRange[1]:
+            label = Label(cell, text=str(i))
+            label.place(x=0,y=0)
+        i+=1
 
 
     mainloop()
