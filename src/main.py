@@ -27,6 +27,15 @@ def optionChanged(*args):
             label.place(x=0, y=0)
         j += 1
 
+
+def one(event):
+    print("One Click")
+
+
+def two(event):
+    print("Two Click")
+
+
 if __name__ == '__main__':
     root = Tk()
     root.geometry("1280x720")
@@ -65,7 +74,7 @@ if __name__ == '__main__':
 
     dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     for name in dayNames:
-        test = Frame(calendarPane, bg="green", width=110,height=25)
+        test = Frame(calendarPane, bg="red", width=110,height=25)
         test.place(x=calX, y=calY)
         label = Label(test, text=name)
         label.place(x=60, y=0)
@@ -80,6 +89,7 @@ if __name__ == '__main__':
         test = Frame(calendarFrame, bg="blue", borderwidth=1, width=110, height=114)
         label = Label(test, text=str(35-count))
         label.place(x=0, y=0)
+        test.bind("<Button-1>", one)
         test.place(x=calX, y=calY)
         dayCells.append(test)
         calX += 110
