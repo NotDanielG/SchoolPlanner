@@ -1,7 +1,6 @@
 from tkinter import *
 import calendar
 import pickle
-import test
 
 
 def option_changed(*args):
@@ -64,7 +63,6 @@ if __name__ == '__main__':
 
     dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     for name in dayNames:
-        # test = Frame(calendarPane, bg="red", width=110, height=25)
         test = Frame(calendarPane, bg="red", width=110, height=25)
         test.place(x=calX, y=calY)
         label = Label(test, text=name)
@@ -77,7 +75,8 @@ if __name__ == '__main__':
     calY = 0
     dayCells = list()
     while count >= 0:
-        test = Frame(calendarFrame, bg="blue", borderwidth=1, width=110, height=114)
+        # test = Frame(calendarFrame, bg="blue", borderwidth=1, width=110, height=114)
+        test = (calendarFrame, bg="blue", borderwidth=1, width=110, height=114)
         label = Label(test, text=str(35-count))
         label.place(x=0, y=0)
         test.bind("<Double-1>", two)
