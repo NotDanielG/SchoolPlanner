@@ -1,7 +1,7 @@
 from tkinter import *
 import calendar
 import pickle
-from .class_holder.py import calendarDay
+from .class_holder import calendarDay
 
 def optionChanged(*args):
     print(monthChoice[selectedMonth.get()])
@@ -37,7 +37,8 @@ def two(event):
     print("Two Click")
 
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
+def start():
     root = Tk()
     root.geometry("1280x720")
     root.resizable(False,False)
@@ -69,7 +70,7 @@ if __name__ == '__main__':
     dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     for name in dayNames:
         #test = Frame(calendarPane, bg="red", width=110, height=25)
-        test = calendarDay(calendarPane, bg="red", width=110, height=25, day=5)
+        test = Frame(calendarPane, bg="red", width=110, height=25)
         test.place(x=calX, y=calY)
         label = Label(test, text=name)
         label.place(x=60, y=0)
