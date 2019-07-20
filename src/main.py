@@ -1,6 +1,7 @@
 from tkinter import *
 import calendar
 import pickle
+from .class_holder.py import calendarDay
 
 def optionChanged(*args):
     print(monthChoice[selectedMonth.get()])
@@ -41,25 +42,18 @@ if __name__ == '__main__':
     root.geometry("1280x720")
     root.resizable(False,False)
     root.configure()
-    c = calendar.TextCalendar(calendar.SUNDAY)
-    #print(c.formatmonth(2019,6))
-    #for i in c.itermonthdays(2019,6):
-    #    print(i)
-    dict = {}
-    dict_day = {1:"Task One"}
-    dict_month = {"January":dict_day}
-    dict[2000] = dict_month
 
-    d_d = {2:"Task Two"}
-    d_m = {"March":d_d}
-    dict[2001] = d_m
+    dict = {}
+    dict_day = {1: "Task One"}
+    dict_month = {"January": dict_day}
+    dict[2000] = dict_month
 
     pickle_out = open("test.pickle", "wb")
     pickle.dump(dict, pickle_out)
     pickle_out.close()
 
-    pickle_in = open("test.pickle","rb")
-    #entry = pickle.load(pickle_in)
+    pickle_in = open("test.pickle", "rb")
+    entry = pickle.load(pickle_in)
 
     leftPane = PanedWindow(background="black", height=720, width=480)
     calendarPane = PanedWindow(background="gray", width=800)
@@ -74,7 +68,8 @@ if __name__ == '__main__':
 
     dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     for name in dayNames:
-        test = Frame(calendarPane, bg="red", width=110,height=25)
+        #test = Frame(calendarPane, bg="red", width=110, height=25)
+        test = calendarDay(calendarPane, bg="red", width=110, height=25, day=5)
         test.place(x=calX, y=calY)
         label = Label(test, text=name)
         label.place(x=60, y=0)
@@ -89,7 +84,7 @@ if __name__ == '__main__':
         test = Frame(calendarFrame, bg="blue", borderwidth=1, width=110, height=114)
         label = Label(test, text=str(35-count))
         label.place(x=0, y=0)
-        test.bind("<Button-1>", one)
+        test.bind("<Double-1>", two)
         test.place(x=calX, y=calY)
         dayCells.append(test)
         calX += 110
