@@ -1,14 +1,10 @@
 from tkinter import *
 import calendar
 import pickle
-from .class_holder import calendarDay
+import test
 
-def optionChanged(*args):
-    print(monthChoice[selectedMonth.get()])
-    print(selectedYear.get())
 
-    #print(args[0][0])
-
+def option_changed(*args):
     range = calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))
     print(range)
     cells = args[0]
@@ -37,11 +33,10 @@ def two(event):
     print("Two Click")
 
 
-#if __name__ == '__main__':
-def start():
+if __name__ == '__main__':
     root = Tk()
     root.geometry("1280x720")
-    root.resizable(False,False)
+    root.resizable(False, False)
     root.configure()
 
     dict = {}
@@ -69,7 +64,7 @@ def start():
 
     dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     for name in dayNames:
-        #test = Frame(calendarPane, bg="red", width=110, height=25)
+        # test = Frame(calendarPane, bg="red", width=110, height=25)
         test = Frame(calendarPane, bg="red", width=110, height=25)
         test.place(x=calX, y=calY)
         label = Label(test, text=name)
@@ -102,7 +97,7 @@ def start():
             count += 1
     selectedMonth = StringVar()
     selectedMonth.set(list(monthChoice.keys())[0])
-    selectedMonth.trace("w", lambda name, index, mode, dayCells=dayCells: optionChanged(dayCells))
+    selectedMonth.trace("w", lambda name, index, mode, dayCells=dayCells: option_changed(dayCells))
 
     monthMenu = OptionMenu(calendarPane, selectedMonth, *monthChoice)
     monthMenu.place(x=315, y=10)
@@ -114,13 +109,13 @@ def start():
         yearChoice[year] = year
     selectedYear = StringVar()
     selectedYear.set(list(yearChoice.keys())[0])
-    selectedYear.trace("w", lambda name, index, mode, dayCells=dayCells: optionChanged(dayCells))
+    selectedYear.trace("w", lambda name, index, mode, dayCells=dayCells: option_changed(dayCells))
 
     yearMenu = OptionMenu(calendarPane, selectedYear, *yearChoice)
     yearMenu.place(x=455, y=10)
     yearMenu.config(width=10, indicator=0)
 
-    #monthrange 0 = monday
+    # monthrange 0 = monday
     dayList = range(1, calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))[1])
     monRange = calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))
 
