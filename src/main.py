@@ -1,6 +1,7 @@
 from tkinter import *
 import calendar
 import pickle
+from test_file import *
 
 
 def option_changed(*args):
@@ -20,8 +21,14 @@ def option_changed(*args):
             j = 1
         if start and j <= range[1]:
             label = Label(cell, text=str(j))
+            cell.set_day(j)
             label.place(x=0, y=0)
+        if not start or j > range[1]:
+            cell.set_day(0)
         j += 1
+
+    for cell in cells:
+        print(cell.get_day())
 
 
 def one(event):
@@ -75,8 +82,8 @@ if __name__ == '__main__':
     calY = 0
     dayCells = list()
     while count >= 0:
-        # test = Frame(calendarFrame, bg="blue", borderwidth=1, width=110, height=114)
-        test = (calendarFrame, bg="blue", borderwidth=1, width=110, height=114)
+        #test = Frame(calendarFrame, bg="blue", borderwidth=1, width=110, height=114)
+        test = calendar_day(calendarFrame, bg="blue", borderwidth=1, width=110, height=114)
         label = Label(test, text=str(35-count))
         label.place(x=0, y=0)
         test.bind("<Double-1>", two)
@@ -131,7 +138,10 @@ if __name__ == '__main__':
             i = 1
         if start and i <= monRange[1]:
             label = Label(cell, text=str(i))
+            cell.set_day(i)
             label.place(x=0, y=0)
         i += 1
 
+    for cell in dayCells:
+        print(cell.get_day())
     mainloop()
