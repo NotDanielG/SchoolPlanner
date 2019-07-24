@@ -1,7 +1,7 @@
 from tkinter import *
 import calendar
 import pickle
-from test_file import *
+from tkinter_subclass import *
 
 
 def option_changed(*args):
