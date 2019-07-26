@@ -5,6 +5,8 @@ from tkinter_subclass import *
 
 
 def option_changed(*args):
+
+    # FORMAT CALENDAR ON MONTH OR YEAR CHANGE
     range = calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))
     print(range)
     cells = args[0]
@@ -25,18 +27,18 @@ def option_changed(*args):
             label.place(x=0, y=0)
         if not start or j > range[1]:
             cell.set_day(0)
+        cell.bind("<Double-1>", lambda event, day_number=cell.get_day(): two(event, day_number))
         j += 1
-
-    for cell in cells:
-        print(cell.get_day())
 
 
 def one(event):
     print("One Click")
 
 
-def two(event):
-    print("Two Click")
+def two(event, day_number):
+    if day_number != 0:
+        print("Two Click, Day Number:", day_number)
+        window = MakeTaskWindow()
 
 
 if __name__ == '__main__':
@@ -82,11 +84,9 @@ if __name__ == '__main__':
     calY = 0
     dayCells = list()
     while count >= 0:
-        #test = Frame(calendarFrame, bg="blue", borderwidth=1, width=110, height=114)
-        test = calendar_day(calendarFrame, bg="blue", borderwidth=1, width=110, height=114)
+        test = CalendarDay(calendarFrame, bg="blue", borderwidth=1, width=110, height=114)
         label = Label(test, text=str(35-count))
         label.place(x=0, y=0)
-        test.bind("<Double-1>", two)
         test.place(x=calX, y=calY)
         dayCells.append(test)
         calX += 110
@@ -121,7 +121,7 @@ if __name__ == '__main__':
     yearMenu.place(x=455, y=10)
     yearMenu.config(width=10, indicator=0)
 
-    # monthrange 0 = monday
+    # FORMAT ON START
     dayList = range(1, calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))[1])
     monRange = calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))
 
@@ -140,8 +140,8 @@ if __name__ == '__main__':
             label = Label(cell, text=str(i))
             cell.set_day(i)
             label.place(x=0, y=0)
+        cell.bind("<Double-1>", lambda event, day_number=cell.get_day(): two(event, day_number))
         i += 1
 
-    for cell in dayCells:
-        print(cell.get_day())
+
     mainloop()
