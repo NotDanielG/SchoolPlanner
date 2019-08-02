@@ -1,6 +1,5 @@
 import tkinter as tk
 
-
 def hello():
     print("hello")
 
@@ -17,41 +16,46 @@ class CalendarDay(tk.Frame):
         self.day = day
 
 
-class MakeTaskWindow():
+class MakeTaskWindow:
     def __init__(self):
         super().__init__()
         self.task_title = ""
+        self.task_description = ""
 
-        self.top = tk.Toplevel()
-        self.top.geometry("300x400")
-        self.top.title("Make New Task")
-        label_title = tk.Label(self.top, text="Title of Task:")
-        label_description = tk.Label(self.top, text="Task Description:")
-        label_title.grid(row=0, column=0, sticky="E", padx=(15, 0))
+        self.__top = tk.Toplevel()
+        self.__top.geometry("400x250")
+        self.__top.resizable(False, False)
+        self.__top.title("Make New Task")
+        self.__top.grab_set()
+
+        label_title = tk.Label(self.__top, text="Title of Task:")
+        label_description = tk.Label(self.__top, text="Task Description:")
+        label_title.grid(row=0, column=0, sticky="E", padx=(15, 0), pady=3)
         label_description.grid(row=1, column=0, sticky="NE", padx=(15, 0))
 
-        self.entry_title = tk.Entry(self.top)
+        self.entry_title = tk.Entry(self.__top, width=40)
         self.entry_title.config(font=("arial", 10))
 
-        textbox_holder = tk.Frame(self.top)
-        print(textbox_holder.winfo_reqwidth())
-        textbox_holder.grid_propagate(True)
-        self.entry_text = tk.Text(textbox_holder)
+        self.entry_text = tk.Text(self.__top, width=40, height=10)
         self.entry_text.config(font=("arial", 10))
         self.entry_text.place(x=0, y=0)
 
-        self.entry_title.grid(row=0, column=1, sticky="W")
-        textbox_holder.grid(row=1, column=1, sticky="W")
+        self.entry_title.grid(row=0, column=1, sticky="W", pady=3)
+        self.entry_text.grid(row=1, column=1, sticky="W")
 
-        button = tk.Button(self.top, text="Save Task", command=self.save)
-
-        button.place(x=25, y=300)
+        button = tk.Button(self.__top, text="Save Task", command=self.save)
+        button.place(x=25, y=60)
 
     def set_task_title(self, title):
         self.task_title = title
 
+    def get_top(self):
+        return self.__top
+
     def save(self):
-        print(self.entry_title.get())
-        self.task_title = str(self.entry_title.get())
-        print(self.entry_text.get("1.0", 'end-1c'))
-        self.top.destroy()
+        # print(self.entry_title.get())
+        # print(self.entry_text.get("1.0", 'end-1c'))
+        if len(str(self.entry_title.get())) != 0 and len(self.entry_text.get("1.0", 'end-1c')) != 0:
+            self.task_title = str(self.entry_title.get())
+            self.task_description = self.entry_text.get("1.0", 'end-1c')
+            self.__top.destroy()

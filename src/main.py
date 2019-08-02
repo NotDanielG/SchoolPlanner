@@ -3,12 +3,18 @@ import calendar
 import pickle
 from tkinter_subclass import *
 
+try:
+    pickle_in = open("test.pickle", "rb")
+    entry = pickle.load(pickle_in)
+    print(entry)
+    dictionary_calendar = entry
+except EOFError:
+    dictionary_calendar = dict()
 
 def option_changed(*args):
 
     # FORMAT CALENDAR ON MONTH OR YEAR CHANGE
     range = calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))
-    print(range)
     cells = args[0]
     counter = range[0] + 1
     if counter >= 7:
@@ -27,7 +33,7 @@ def option_changed(*args):
             label.place(x=0, y=0)
         if not start or j > range[1]:
             cell.set_day(0)
-        cell.bind("<Double-1>", lambda event, day_number=cell.get_day(): two(event, day_number))
+        cell.bind("<Double-1>", lambda event, day_number=cell.get_day(): double_click(event, day_number))
         j += 1
 
 
@@ -35,29 +41,38 @@ def one(event):
     print("One Click")
 
 
-def two(event, day_number):
+def double_click(event, day_number):
     if day_number != 0:
         print("Two Click, Day Number:", day_number)
         window = MakeTaskWindow()
+        window.get_top().wait_window()
+
+        print(window.task_title)
+        print(window.task_description)
+        save(title=window.task_title, desc=window.task_description, day=day_number)
 
 
-if __name__ == '__main__':
+def save(title, desc, day):
+    global dictionary_calendar
+    if selectedYear.get() not in dictionary_calendar:
+        dictionary_calendar[selectedYear.get()] = dict()
+    if selectedMonth.get() not in dictionary_calendar[selectedYear.get()]:
+        dictionary_calendar[selectedYear.get()][selectedMonth.get()] = dict()
+    if day not in dictionary_calendar[selectedYear.get()][selectedMonth.get()]:
+        dictionary_calendar[selectedYear.get()][selectedMonth.get()][day] = dict()
+    if title not in dictionary_calendar[selectedYear.get()][selectedMonth.get()][day]:
+        dictionary_calendar[selectedYear.get()][selectedMonth.get()][day][title] = desc
+
+    pickle_out = open("test.pickle", "wb")
+    pickle.dump(dictionary_calendar, pickle_out)
+    pickle_out.close()
+
+
+if __name__ == "__main__":
     root = Tk()
     root.geometry("1280x720")
     root.resizable(False, False)
     root.configure()
-
-    dict = {}
-    dict_day = {1: "Task One"}
-    dict_month = {"January": dict_day}
-    dict[2000] = dict_month
-
-    pickle_out = open("test.pickle", "wb")
-    pickle.dump(dict, pickle_out)
-    pickle_out.close()
-
-    pickle_in = open("test.pickle", "rb")
-    entry = pickle.load(pickle_in)
 
     leftPane = PanedWindow(background="black", height=720, width=480)
     calendarPane = PanedWindow(background="gray", width=800)
@@ -140,7 +155,7 @@ if __name__ == '__main__':
             label = Label(cell, text=str(i))
             cell.set_day(i)
             label.place(x=0, y=0)
-        cell.bind("<Double-1>", lambda event, day_number=cell.get_day(): two(event, day_number))
+        cell.bind("<Double-1>", lambda event, day_number=cell.get_day(): double_click(event, day_number))
         i += 1
 
 
