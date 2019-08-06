@@ -12,7 +12,6 @@ except EOFError:
     dictionary_calendar = dict()
 
 def option_changed(*args):
-
     # FORMAT CALENDAR ON MONTH OR YEAR CHANGE
     range = calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))
     cells = args[0]
@@ -28,17 +27,26 @@ def option_changed(*args):
             start = True
             j = 1
         if start and j <= range[1]:
-            label = Label(cell, text=str(j))
+            label = Label(cell, text=str(j), bg="white")
             cell.set_day(j)
             label.place(x=0, y=0)
         if not start or j > range[1]:
             cell.set_day(0)
         cell.bind("<Double-1>", lambda event, day_number=cell.get_day(): double_click(event, day_number))
+        cell.bind("<Button-1>", lambda event, day_number=cell.get_day(): one_click(event, day_number))
         j += 1
 
 
-def one(event):
-    print("One Click")
+def one_click(event, day_number):
+    # Use day number, month and year to find tasks and respective description
+    global dictionary_calendar
+
+    x = 5
+    y = 5
+    for title in dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number]:
+        print(title, dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number][title])
+
+
 
 
 def double_click(event, day_number):
@@ -46,10 +54,10 @@ def double_click(event, day_number):
         print("Two Click, Day Number:", day_number)
         window = MakeTaskWindow()
         window.get_top().wait_window()
-
-        print(window.task_title)
-        print(window.task_description)
-        save(title=window.task_title, desc=window.task_description, day=day_number)
+        if not window.canceled and not window.closed_x:
+            print(window.task_title)
+            print(window.task_description)
+            save(title=window.task_title, desc=window.task_description, day=day_number)
 
 
 def save(title, desc, day):
@@ -74,13 +82,21 @@ if __name__ == "__main__":
     root.resizable(False, False)
     root.configure()
 
-    leftPane = PanedWindow(background="black", height=720, width=480)
-    calendarPane = PanedWindow(background="gray", width=800)
+    leftPane = PanedWindow(background="#212121", height=720, width=480)
+    calendarPane = PanedWindow(background="#303030", width=800)
     leftPane.pack(fill=BOTH, side=LEFT)
+    leftPane.pack_propagate(False)
     calendarPane.pack(fill=BOTH, side=RIGHT)
+    calendarPane.pack_propagate(False)
 
-    calendarFrame = Frame(calendarPane, bg="red", width=770, height=570)
+    calendarFrame = Frame(calendarPane, bg="black", width=770, height=570)
     calendarFrame.place(x=15, y=100)
+
+    scrollbar = Scrollbar(leftPane)
+    scrollbar.pack(side=RIGHT, fill=Y)
+    listbox = Listbox(leftPane, yscrollcommand=scrollbar.set)
+    #listbox.pack(side=LEFT)
+    scrollbar.config(command=listbox.yview)
 
     calX = 15
     calY = 75
@@ -99,9 +115,9 @@ if __name__ == "__main__":
     calY = 0
     dayCells = list()
     while count >= 0:
-        test = CalendarDay(calendarFrame, bg="blue", borderwidth=1, width=110, height=114)
-        label = Label(test, text=str(35-count))
-        label.place(x=0, y=0)
+        test = CalendarDay(calendarFrame, bg="white", borderwidth=1, width=110, height=114, relief="solid")
+        # label = Label(test, text=str(35-count))
+        # label.place(x=0, y=0)
         test.place(x=calX, y=calY)
         dayCells.append(test)
         calX += 110
@@ -152,10 +168,11 @@ if __name__ == "__main__":
             start = True
             i = 1
         if start and i <= monRange[1]:
-            label = Label(cell, text=str(i))
+            label = Label(cell, text=str(i), bg="white")
             cell.set_day(i)
             label.place(x=0, y=0)
         cell.bind("<Double-1>", lambda event, day_number=cell.get_day(): double_click(event, day_number))
+        cell.bind("<Button-1>", lambda event, day_number=cell.get_day(): one_click(event, day_number))
         i += 1
 
 
