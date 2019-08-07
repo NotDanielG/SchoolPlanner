@@ -1,4 +1,5 @@
 import tkinter as tk
+import os
 
 def hello():
     print("hello")
@@ -26,7 +27,7 @@ class MakeTaskWindow:
         self.task_title = ""
         self.task_description = ""
         self.canceled = False
-        self.closed_x = False
+        self.closed_x = True
 
         self.__top = tk.Toplevel(bg="#121212")
         self.__top.geometry("400x250")
@@ -65,7 +66,7 @@ class MakeTaskWindow:
         if len(str(self.entry_title.get())) != 0 and len(self.entry_text.get("1.0", 'end-1c')) != 0:
             self.task_title = str(self.entry_title.get())
             self.task_description = self.entry_text.get("1.0", 'end-1c')
-            self.closed_x = True
+            self.closed_x = False
             self.__top.destroy()
 
     def is_empty(self):
@@ -75,5 +76,26 @@ class MakeTaskWindow:
 
     def cancel(self):
         self.canceled = True
-        self.closed_x = True
+        self.closed_x = False
         self.__top.destroy()
+
+
+class MinimizableTask(tk.Frame):
+    def __init__(self, root, bg, width, height, desc):
+        tk.Frame.__init__(self, root, bg=bg, width=width, height=height)
+        self.description = desc
+        self.image_files = list()
+        dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        the_dir = os.path.join(dir, "resources\smaller_expand.png")
+        self.image_files.append(the_dir)
+        the_dir = os.path.join(dir, "resources\min.png")
+        self.image_files.append(the_dir)
+
+        temp = tk.PhotoImage(file=self.image_files[0])
+        self.min_button = tk.Label(self, image=temp, bg=self["background"])
+        self.min_button.image = temp
+        self.min_button.pack(side=tk.LEFT)
+        self.min_button.bind("<Button-1>", self.eggsdee)
+
+    def eggsdee(self, event):
+        print("Working")

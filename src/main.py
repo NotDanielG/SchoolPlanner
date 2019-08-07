@@ -11,6 +11,7 @@ try:
 except EOFError:
     dictionary_calendar = dict()
 
+
 def option_changed(*args):
     # FORMAT CALENDAR ON MONTH OR YEAR CHANGE
     range = calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))
@@ -40,13 +41,17 @@ def option_changed(*args):
 def one_click(event, day_number):
     # Use day number, month and year to find tasks and respective description
     global dictionary_calendar
+    t = ""
+    if selectedYear.get() in dictionary_calendar and selectedMonth.get() in dictionary_calendar[selectedYear.get()] \
+            and day_number in dictionary_calendar[selectedYear.get()][selectedMonth.get()]:
+        for title in dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number]:
+            print(title, dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number][title])
+            t = dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number][title]
 
-    x = 5
-    y = 5
-    for title in dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number]:
-        print(title, dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number][title])
-
-
+    desc = t
+    obj = MinimizableTask(leftPane, bg="white", width="200", height="200", desc=desc)
+    obj.pack_propagate(False)
+    obj.place(x=5, y=5)
 
 
 def double_click(event, day_number):
@@ -54,6 +59,7 @@ def double_click(event, day_number):
         print("Two Click, Day Number:", day_number)
         window = MakeTaskWindow()
         window.get_top().wait_window()
+        print("Canceled", window.canceled, "Closed", window.closed_x)
         if not window.canceled and not window.closed_x:
             print(window.task_title)
             print(window.task_description)
@@ -171,6 +177,9 @@ if __name__ == "__main__":
             label = Label(cell, text=str(i), bg="white")
             cell.set_day(i)
             label.place(x=0, y=0)
+            if selectedYear.get() in dictionary_calendar and selectedMonth.get() in dictionary_calendar[
+                selectedYear.get()] and i in dictionary_calendar[selectedYear.get()][selectedMonth.get()]:
+                print("H", i)
         cell.bind("<Double-1>", lambda event, day_number=cell.get_day(): double_click(event, day_number))
         cell.bind("<Button-1>", lambda event, day_number=cell.get_day(): one_click(event, day_number))
         i += 1
