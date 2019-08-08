@@ -30,7 +30,13 @@ def option_changed(*args):
         if start and j <= range[1]:
             label = Label(cell, text=str(j), bg="white")
             cell.set_day(j)
-            label.place(x=0, y=0)
+            # label.place(x=0, y=0)
+            label.pack(side=LEFT, anchor=N)
+            if selectedYear.get() in dictionary_calendar and selectedMonth.get() in dictionary_calendar[
+                    selectedYear.get()] and i in dictionary_calendar[selectedYear.get()][selectedMonth.get()]:
+                for title in dictionary_calendar[selectedYear.get()][selectedMonth.get()][i]:
+                    task_title = Label(cell, text=title)
+                    task_title.pack(anchor=W)
         if not start or j > range[1]:
             cell.set_day(0)
         cell.bind("<Double-1>", lambda event, day_number=cell.get_day(): double_click(event, day_number))
@@ -41,17 +47,19 @@ def option_changed(*args):
 def one_click(event, day_number):
     # Use day number, month and year to find tasks and respective description
     global dictionary_calendar
+    d = ""
     t = ""
+    y = 5
     if selectedYear.get() in dictionary_calendar and selectedMonth.get() in dictionary_calendar[selectedYear.get()] \
             and day_number in dictionary_calendar[selectedYear.get()][selectedMonth.get()]:
         for title in dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number]:
             print(title, dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number][title])
-            t = dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number][title]
-
-    desc = t
-    obj = MinimizableTask(leftPane, bg="white", width="200", height="200", desc=desc)
-    obj.pack_propagate(False)
-    obj.place(x=5, y=5)
+            t = title
+            d = dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number][title]
+            obj = MinimizableTask(leftPane, bg="white", width="100", height="100", desc=d, title=t)
+            obj.grid_propagate(False)
+            obj.place(x=5, y=y)
+            y += 105
 
 
 def double_click(event, day_number):
@@ -60,10 +68,11 @@ def double_click(event, day_number):
         window = MakeTaskWindow()
         window.get_top().wait_window()
         print("Canceled", window.canceled, "Closed", window.closed_x)
-        if not window.canceled and not window.closed_x:
-            print(window.task_title)
-            print(window.task_description)
-            save(title=window.task_title, desc=window.task_description, day=day_number)
+        if not window.canceled and not window.closed_x:  # Checks if cancel button pressed or X'd out
+            if check_same_title(day=day_number):  # False means it is a new title, therefore it saves
+                print(window.task_title)
+                print(window.task_description)
+                save(title=window.task_title, desc=window.task_description, day=day_number)
 
 
 def save(title, desc, day):
@@ -81,6 +90,18 @@ def save(title, desc, day):
     pickle.dump(dictionary_calendar, pickle_out)
     pickle_out.close()
 
+
+def check_same_title(day):
+    global dictionary_calendar
+    if selectedYear.get() not in dictionary_calendar:
+        return True
+    if selectedMonth.get() not in dictionary_calendar[selectedYear.get()]:
+        return True
+    if day not in dictionary_calendar[selectedYear.get()][selectedMonth.get()]:
+        return True
+    if title not in dictionary_calendar[selectedYear.get()][selectedMonth.get()][day]:
+        return True
+    return False
 
 if __name__ == "__main__":
     root = Tk()
@@ -125,6 +146,7 @@ if __name__ == "__main__":
         # label = Label(test, text=str(35-count))
         # label.place(x=0, y=0)
         test.place(x=calX, y=calY)
+        test.pack_propagate(False)
         dayCells.append(test)
         calX += 110
         if count % 7 == 0 and count != 35:
@@ -176,10 +198,13 @@ if __name__ == "__main__":
         if start and i <= monRange[1]:
             label = Label(cell, text=str(i), bg="white")
             cell.set_day(i)
-            label.place(x=0, y=0)
+            #label.place(x=0, y=0)
+            label.pack(side=LEFT, anchor=N)
             if selectedYear.get() in dictionary_calendar and selectedMonth.get() in dictionary_calendar[
                 selectedYear.get()] and i in dictionary_calendar[selectedYear.get()][selectedMonth.get()]:
-                print("H", i)
+                for title in dictionary_calendar[selectedYear.get()][selectedMonth.get()][i]:
+                    task_title = Label(cell, text=title)
+                    task_title.pack(anchor=W)
         cell.bind("<Double-1>", lambda event, day_number=cell.get_day(): double_click(event, day_number))
         cell.bind("<Button-1>", lambda event, day_number=cell.get_day(): one_click(event, day_number))
         i += 1
