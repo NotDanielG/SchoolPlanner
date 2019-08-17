@@ -22,12 +22,13 @@ class CalendarDay(Frame):
 
 
 class MakeTaskWindow:
-    def __init__(self):
+    def __init__(self, mode):  # mode types: 0=create, 1=edit
         super().__init__()
         self.task_title = ""
         self.task_description = ""
         self.canceled = False
         self.closed_x = True
+        self.mode = mode
 
         self.__top = Toplevel(bg="#121212")
         self.__top.geometry("400x250")
@@ -50,8 +51,12 @@ class MakeTaskWindow:
         self.entry_title.grid(row=0, column=1, sticky="W", pady=3)
         self.entry_text.grid(row=1, column=1, sticky="W")
 
-        button = Button(self.__top, text="Save Task", command=self.save, width=8)
-        button.place(x=250, y=220)
+        if self.mode == 0:
+            button = Button(self.__top, text="Save Task", command=self.save, width=8)
+            button.place(x=250, y=220)
+        else:
+            button = Button(self.__top, text="Edit Task", command=self.edit, width=8)
+            button.place(x=250, y=220)
 
         button = Button(self.__top, text="Cancel", command=self.cancel, width=5)
         button.place(x=335, y=220)
@@ -61,6 +66,9 @@ class MakeTaskWindow:
 
     def get_top(self):
         return self.__top
+
+    def edit(self):
+        print('edit')
 
     def save(self):
         if len(str(self.entry_title.get())) != 0 and len(self.entry_text.get("1.0", 'end-1c')) != 0:
@@ -91,22 +99,31 @@ class MinimizableTask(Frame):
         self.image_files.append(the_dir)
 
         self.counter = 0
+        self.is_hidden = False
         temp = PhotoImage(file=self.image_files[self.counter])
         self.min_button = Label(self, image=temp, bg=self["background"])
         self.min_button.image = temp
-        self.min_button.grid(row=0,column=0)
+        self.min_button.grid(row=0, column=0)
         self.min_button.bind("<Button-1>", self.button_pressed)
 
         self.description = desc
         self.title = title
         self.title_label = Label(self, text=title)
+        self.title_label.config(pady=5)
         self.description_label = Label(self, text=desc)
-        self.title_label.grid(row=0,column=1)
-        self.description_label.grid(row=1, column=1)
+        self.description_label.config(pady=5)
+        self.title_label.grid(row=0, column=1, pady=5, padx=(0, 5))
+        self.description_label.grid(row=1, column=1, pady=5, padx=(0, 5))
 
     def button_pressed(self, event):
         self.counter += 1
         new_image = PhotoImage(file=self.image_files[self.counter % 2])
         self.min_button.config(image=new_image)
         self.min_button.image = new_image
+        if not self.is_hidden:
+            self.description_label.grid_forget()
+            self.is_hidden = True
+        else:
+            self.description_label.grid(row=1, column=1, pady=5, padx=(0, 5))
+            self.is_hidden = False
         self.update()

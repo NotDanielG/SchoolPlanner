@@ -57,7 +57,7 @@ def one_click(event, day_number):
             t = title
             d = dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number][title]
             obj = MinimizableTask(leftPane, bg="white", width="100", height="100", desc=d, title=t)
-            obj.grid_propagate(False)
+            # obj.grid_propagate(False)
             obj.place(x=5, y=y)
             y += 105
 
@@ -65,7 +65,7 @@ def one_click(event, day_number):
 def double_click(event, day_number):
     if day_number != 0:
         print("Two Click, Day Number:", day_number)
-        window = MakeTaskWindow()
+        window = MakeTaskWindow(0)
         window.get_top().wait_window()
         print("Canceled", window.canceled, "Closed", window.closed_x)
         if not window.canceled and not window.closed_x:  # Checks if cancel button pressed or X'd out
@@ -103,6 +103,7 @@ def check_same_title(day):
         return True
     return False
 
+
 if __name__ == "__main__":
     root = Tk()
     root.geometry("1280x720")
@@ -116,6 +117,8 @@ if __name__ == "__main__":
     calendarPane.pack(fill=BOTH, side=RIGHT)
     calendarPane.pack_propagate(False)
 
+    #dayPane = Frame(leftPane, bg="white", width=450, height=48, text="January 1 ")
+    #dayPane.place(x=5, y=5)
     calendarFrame = Frame(calendarPane, bg="black", width=770, height=570)
     calendarFrame.place(x=15, y=100)
 
