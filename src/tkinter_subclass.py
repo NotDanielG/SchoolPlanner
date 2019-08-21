@@ -23,7 +23,7 @@ class CalendarDay(Frame):
 
 class MakeTaskWindow:
     def __init__(self, mode):  # mode types: 0=create, 1=edit
-        super().__init__()
+        # super().__init__()
         self.task_title = ""
         self.task_description = ""
         self.canceled = False
@@ -55,7 +55,7 @@ class MakeTaskWindow:
             button = Button(self.__top, text="Save Task", command=self.save, width=8)
             button.place(x=250, y=220)
         else:
-            button = Button(self.__top, text="Edit Task", command=self.edit, width=8)
+            button = Button(self.__top, text="Edit Task", command=self.save, width=8)
             button.place(x=250, y=220)
 
         button = Button(self.__top, text="Cancel", command=self.cancel, width=5)
@@ -66,9 +66,6 @@ class MakeTaskWindow:
 
     def get_top(self):
         return self.__top
-
-    def edit(self):
-        print('edit')
 
     def save(self):
         if len(str(self.entry_title.get())) != 0 and len(self.entry_text.get("1.0", 'end-1c')) != 0:
@@ -89,8 +86,8 @@ class MakeTaskWindow:
 
 
 class MinimizableTask(Frame):
-    def __init__(self, root, bg, width, height, desc, title):
-        Frame.__init__(self, root, bg=bg, width=width, height=height)
+    def __init__(self, root, bg, width, desc, title):
+        Frame.__init__(self, root, bg=bg, width=width)
         self.image_files = list()
         dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         the_dir = os.path.join(dir, "resources\smaller_expand.png")
@@ -105,6 +102,7 @@ class MinimizableTask(Frame):
         self.min_button.image = temp
         self.min_button.grid(row=0, column=0)
         self.min_button.bind("<Button-1>", self.button_pressed)
+        self.delete_window = None
 
         self.description = desc
         self.title = title
@@ -127,3 +125,31 @@ class MinimizableTask(Frame):
             self.description_label.grid(row=1, column=1, pady=5, padx=(0, 5))
             self.is_hidden = False
         self.update()
+
+
+class ChangeTaskWindow():
+    def __init__(self):
+        self.top = Toplevel(bg="#424242")
+        self.top.geometry("240x80")
+        self.top.resizable(False, False)
+        self.is_delete = False
+        self.is_edit = False
+        self.delete_label = Label(self.top, text="Delete Task?", bg="#424242", fg="white", pady=15)
+        self.delete_label.pack()
+        self.delete_button = Button(self.top, text="Delete", command=self.delete_task)
+        self.edit_button = Button(self.top, text="Edit", command=self.edit_task)
+        self.no_button = Button(self.top, text="Cancel", command=self.cancel)
+        self.edit_button.pack(side=RIGHT, padx=5, pady=(0, 5), anchor=S)
+        self.delete_button.pack(side=RIGHT, padx=(5, 0), pady=(0, 5), anchor=S)
+        self.no_button.pack(side=RIGHT, pady=(0, 5), anchor=S)
+
+    def edit_task(self):
+        self.is_edit = True
+        self.top.destroy()
+
+    def delete_task(self):
+        self.is_delete = True
+        self.top.destroy()
+
+    def cancel(self):
+        self.top.destroy()

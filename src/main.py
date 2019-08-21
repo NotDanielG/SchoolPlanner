@@ -12,6 +12,38 @@ except EOFError:
     dictionary_calendar = dict()
 
 
+def update_calender():  # repeat of option changed, aside from args
+    cal_range = calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))
+    cells = dayCells
+    counter = cal_range[0] + 1
+    if counter >= 7:
+        counter = 0
+    k = 0
+    is_start = False
+    for cell in cells:
+        for child in cell.winfo_children():
+            child.destroy()
+        if k == counter and not is_start:
+            is_start = True
+            k = 1
+        if is_start and k <= cal_range[1]:
+            label = Label(cell, text=str(k), bg="white")
+            cell.set_day(k)
+            label.pack(side=LEFT, anchor=N)
+            if selectedYear.get() in dictionary_calendar and selectedMonth.get() in dictionary_calendar[
+                selectedYear.get()] and k in dictionary_calendar[selectedYear.get()][selectedMonth.get()]:
+                for title in dictionary_calendar[selectedYear.get()][selectedMonth.get()][k]:
+                    task_title = Label(cell, text=title)
+                    task_title.pack(anchor=W)
+        if not is_start or k > cal_range[1]:
+            cell.set_day(0)
+        cell.bind("<Button-3>", lambda event, day_number=cell.get_day(): right_click(event, day_number))
+        cell.bind("<Button-1>", lambda event, day_number=cell.get_day(): one_click(event, day_number))
+        k += 1
+    for obj in task_list:
+        obj.destroy()
+
+
 def option_changed(*args):
     # FORMAT CALENDAR ON MONTH OR YEAR CHANGE
     range = calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))
@@ -33,45 +65,79 @@ def option_changed(*args):
             # label.place(x=0, y=0)
             label.pack(side=LEFT, anchor=N)
             if selectedYear.get() in dictionary_calendar and selectedMonth.get() in dictionary_calendar[
-                    selectedYear.get()] and i in dictionary_calendar[selectedYear.get()][selectedMonth.get()]:
-                for title in dictionary_calendar[selectedYear.get()][selectedMonth.get()][i]:
+                    selectedYear.get()] and j in dictionary_calendar[selectedYear.get()][selectedMonth.get()]:
+                for title in dictionary_calendar[selectedYear.get()][selectedMonth.get()][j]:
                     task_title = Label(cell, text=title)
                     task_title.pack(anchor=W)
         if not start or j > range[1]:
             cell.set_day(0)
-        cell.bind("<Double-1>", lambda event, day_number=cell.get_day(): double_click(event, day_number))
+        cell.bind("<Button-3>", lambda event, day_number=cell.get_day(): right_click(event, day_number))
         cell.bind("<Button-1>", lambda event, day_number=cell.get_day(): one_click(event, day_number))
         j += 1
+    for obj in task_list:
+        obj.destroy()
 
 
 def one_click(event, day_number):
     # Use day number, month and year to find tasks and respective description
     global dictionary_calendar
-    d = ""
-    t = ""
+    d = ""  # desc
+    t = ""  # title
     y = 5
+    for obj in task_list:
+        obj.destroy()
     if selectedYear.get() in dictionary_calendar and selectedMonth.get() in dictionary_calendar[selectedYear.get()] \
             and day_number in dictionary_calendar[selectedYear.get()][selectedMonth.get()]:
         for title in dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number]:
-            print(title, dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number][title])
+            # (title, dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number][title])
             t = title
             d = dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number][title]
-            obj = MinimizableTask(leftPane, bg="white", width="100", height="100", desc=d, title=t)
-            # obj.grid_propagate(False)
-            obj.place(x=5, y=y)
+            obj = MinimizableTask(taskPane, bg="white", width=440, desc=d, title=t)
+            obj.pack(anchor=W, padx=5, pady=5)
+            obj.bind("<Double-1>", lambda event, day=day_number, title=obj.title: change_task(event, day, title))
+            task_list.append(obj)
             y += 105
 
 
-def double_click(event, day_number):
+def change_task(event, day, title):
+    top_window = ChangeTaskWindow()
+    top_window.top.wait_window()
+    if top_window.is_edit:
+        change_memory(mode=0, day=day, title=title)
+    if top_window.is_delete:
+        change_memory(mode=1, day=day, title=title)
+
+
+def change_memory(mode, day, title):  # 0 is edit, 1 is delete
+    global dictionary_calendar
+    print("Mode= ", mode, "Day= ", day)
+    old_title = title
+    if mode == 0:
+        window = MakeTaskWindow(1)
+        window.get_top().wait_window()
+        if not window.canceled and not window.closed_x:
+            dictionary_calendar[selectedYear.get()][selectedMonth.get()][day].pop(old_title)
+            if check_same_title(day=day, task_title=window.task_title):
+                new_title = window.task_title
+                new_desc = window.task_description
+                save(title=new_title, desc=new_desc, day=day)
+    if mode == 1:
+        dictionary_calendar[selectedYear.get()][selectedMonth.get()][day].pop(old_title)
+        pickle_out = open("test.pickle", "wb")
+        pickle.dump(dictionary_calendar, pickle_out)
+        pickle_out.close()
+
+
+def right_click(event, day_number):
     if day_number != 0:
-        print("Two Click, Day Number:", day_number)
+        # print("Two Click, Day Number:", day_number)
         window = MakeTaskWindow(0)
         window.get_top().wait_window()
-        print("Canceled", window.canceled, "Closed", window.closed_x)
+        #print("Canceled", window.canceled, "Closed", window.closed_x)
         if not window.canceled and not window.closed_x:  # Checks if cancel button pressed or X'd out
-            if check_same_title(day=day_number):  # False means it is a new title, therefore it saves
-                print(window.task_title)
-                print(window.task_description)
+            if check_same_title(day=day_number, task_title=window.task_title):  # False means it is a new title, therefore it saves
+                # print(window.task_title)
+                # print(window.task_description)
                 save(title=window.task_title, desc=window.task_description, day=day_number)
 
 
@@ -85,13 +151,15 @@ def save(title, desc, day):
         dictionary_calendar[selectedYear.get()][selectedMonth.get()][day] = dict()
     if title not in dictionary_calendar[selectedYear.get()][selectedMonth.get()][day]:
         dictionary_calendar[selectedYear.get()][selectedMonth.get()][day][title] = desc
-
+    print("TEST")
     pickle_out = open("test.pickle", "wb")
     pickle.dump(dictionary_calendar, pickle_out)
     pickle_out.close()
 
+    update_calender()
 
-def check_same_title(day):
+
+def check_same_title(day, task_title):
     global dictionary_calendar
     if selectedYear.get() not in dictionary_calendar:
         return True
@@ -99,7 +167,7 @@ def check_same_title(day):
         return True
     if day not in dictionary_calendar[selectedYear.get()][selectedMonth.get()]:
         return True
-    if title not in dictionary_calendar[selectedYear.get()][selectedMonth.get()][day]:
+    if task_title not in dictionary_calendar[selectedYear.get()][selectedMonth.get()][day]:
         return True
     return False
 
@@ -117,11 +185,15 @@ if __name__ == "__main__":
     calendarPane.pack(fill=BOTH, side=RIGHT)
     calendarPane.pack_propagate(False)
 
-    #dayPane = Frame(leftPane, bg="white", width=450, height=48, text="January 1 ")
-    #dayPane.place(x=5, y=5)
+    dayPane = Frame(leftPane, bg="white", width=450, height=48)
+    dayPane.place(x=5, y=5)
+    taskPane = Frame(leftPane, bg="red", width=450, height=657)
+    taskPane.place(x=5, y=58)
+    taskPane.pack_propagate(False)
     calendarFrame = Frame(calendarPane, bg="black", width=770, height=570)
     calendarFrame.place(x=15, y=100)
 
+    task_list = list()
     scrollbar = Scrollbar(leftPane)
     scrollbar.pack(side=RIGHT, fill=Y)
     listbox = Listbox(leftPane, yscrollcommand=scrollbar.set)
@@ -208,7 +280,7 @@ if __name__ == "__main__":
                 for title in dictionary_calendar[selectedYear.get()][selectedMonth.get()][i]:
                     task_title = Label(cell, text=title)
                     task_title.pack(anchor=W)
-        cell.bind("<Double-1>", lambda event, day_number=cell.get_day(): double_click(event, day_number))
+        cell.bind("<Button-3>", lambda event, day_number=cell.get_day(): right_click(event, day_number))
         cell.bind("<Button-1>", lambda event, day_number=cell.get_day(): one_click(event, day_number))
         i += 1
 
