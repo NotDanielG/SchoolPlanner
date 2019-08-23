@@ -22,7 +22,7 @@ class CalendarDay(Frame):
 
 
 class MakeTaskWindow:
-    def __init__(self, mode):  # mode types: 0=create, 1=edit
+    def __init__(self, mode, old_title, old_desc):  # mode types: 0=create, 1=edit
         # super().__init__()
         self.task_title = ""
         self.task_description = ""
@@ -55,6 +55,8 @@ class MakeTaskWindow:
             button = Button(self.__top, text="Save Task", command=self.save, width=8)
             button.place(x=250, y=220)
         else:
+            self.entry_title.insert(0, old_title)
+            self.entry_text.insert("1.0", old_desc)
             button = Button(self.__top, text="Edit Task", command=self.save, width=8)
             button.place(x=250, y=220)
 

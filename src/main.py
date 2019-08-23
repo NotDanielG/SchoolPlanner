@@ -2,6 +2,7 @@ from tkinter import *
 import calendar
 import pickle
 from tkinter_subclass import *
+from datetime import date
 
 try:
     pickle_in = open("test.pickle", "rb")
@@ -77,43 +78,61 @@ def option_changed(*args):
     for obj in task_list:
         obj.destroy()
 
+    for label in dayPane.winfo_children():
+        label.destroy()
+    daySelected=1
+    new_label = Label(dayPane, bg=dayPane["background"], text=(selectedMonth.get(), str(daySelected), selectedYear.get()))
+    new_label.pack()
+    view_task(daySelected)
+
 
 def one_click(event, day_number):
     # Use day number, month and year to find tasks and respective description
-    global dictionary_calendar
+    if day_number != 0:
+        global dictionary_calendar
+        for lab in dayPane.winfo_children():
+            lab.destroy()
+        daySelected = day_number
+        day_label = Label(dayPane, bg=dayPane["background"], text=(selectedMonth.get(), str(daySelected), selectedYear.get()))
+        day_label.pack()
+        for obj in task_list:
+            obj.destroy()
+        if selectedYear.get() in dictionary_calendar and selectedMonth.get() in dictionary_calendar[selectedYear.get()] \
+                and day_number in dictionary_calendar[selectedYear.get()][selectedMonth.get()]:
+            view_task(day_number=day_number)
+
+
+def view_task(day_number):
     d = ""  # desc
     t = ""  # title
     y = 5
-    for obj in task_list:
-        obj.destroy()
     if selectedYear.get() in dictionary_calendar and selectedMonth.get() in dictionary_calendar[selectedYear.get()] \
             and day_number in dictionary_calendar[selectedYear.get()][selectedMonth.get()]:
         for title in dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number]:
-            # (title, dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number][title])
             t = title
             d = dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number][title]
             obj = MinimizableTask(taskPane, bg="white", width=440, desc=d, title=t)
             obj.pack(anchor=W, padx=5, pady=5)
-            obj.bind("<Double-1>", lambda event, day=day_number, title=obj.title: change_task(event, day, title))
+            obj.bind("<Double-1>", lambda event, day=day_number, title=obj.title, desc=d: change_task(event, day, title, desc))
             task_list.append(obj)
             y += 105
 
 
-def change_task(event, day, title):
+def change_task(event, day, title, desc):
     top_window = ChangeTaskWindow()
     top_window.top.wait_window()
     if top_window.is_edit:
-        change_memory(mode=0, day=day, title=title)
+        change_memory(mode=0, day=day, title=title, desc=desc)
     if top_window.is_delete:
-        change_memory(mode=1, day=day, title=title)
+        change_memory(mode=1, day=day, title=title, desc=desc)
 
 
-def change_memory(mode, day, title):  # 0 is edit, 1 is delete
+def change_memory(mode, day, title, desc):  # 0 is edit, 1 is delete
     global dictionary_calendar
     print("Mode= ", mode, "Day= ", day)
     old_title = title
     if mode == 0:
-        window = MakeTaskWindow(1)
+        window = MakeTaskWindow(mode=1, old_desc=desc, old_title=title)
         window.get_top().wait_window()
         if not window.canceled and not window.closed_x:
             dictionary_calendar[selectedYear.get()][selectedMonth.get()][day].pop(old_title)
@@ -121,19 +140,20 @@ def change_memory(mode, day, title):  # 0 is edit, 1 is delete
                 new_title = window.task_title
                 new_desc = window.task_description
                 save(title=new_title, desc=new_desc, day=day)
+                view_task(day_number=day)
     if mode == 1:
         dictionary_calendar[selectedYear.get()][selectedMonth.get()][day].pop(old_title)
         pickle_out = open("test.pickle", "wb")
         pickle.dump(dictionary_calendar, pickle_out)
         pickle_out.close()
+        update_calender()
 
 
 def right_click(event, day_number):
     if day_number != 0:
         # print("Two Click, Day Number:", day_number)
-        window = MakeTaskWindow(0)
+        window = MakeTaskWindow(mode=0, old_desc="", old_title="")
         window.get_top().wait_window()
-        #print("Canceled", window.canceled, "Closed", window.closed_x)
         if not window.canceled and not window.closed_x:  # Checks if cancel button pressed or X'd out
             if check_same_title(day=day_number, task_title=window.task_title):  # False means it is a new title, therefore it saves
                 # print(window.task_title)
@@ -187,7 +207,9 @@ if __name__ == "__main__":
 
     dayPane = Frame(leftPane, bg="white", width=450, height=48)
     dayPane.place(x=5, y=5)
-    taskPane = Frame(leftPane, bg="red", width=450, height=657)
+    dayPane.pack_propagate(False)
+    daySelected = 1
+    taskPane = Frame(leftPane, bg="red", width=450, height=655)
     taskPane.place(x=5, y=58)
     taskPane.pack_propagate(False)
     calendarFrame = Frame(calendarPane, bg="black", width=770, height=570)
@@ -229,6 +251,10 @@ if __name__ == "__main__":
             calX = 0
         count += -1
 
+    open_day = date.today()
+    today_month = open_day.strftime("%B")
+    today_year = open_day.strftime("%Y")
+
     monthChoice = {}
     count = 1
     for month in calendar.month_name:
@@ -236,7 +262,9 @@ if __name__ == "__main__":
             monthChoice[month] = count
             count += 1
     selectedMonth = StringVar()
-    selectedMonth.set(list(monthChoice.keys())[0])
+    # selectedMonth.set(list(monthChoice.keys())[0])
+    selectedMonth.set(today_month)
+    print(selectedMonth.get())
     selectedMonth.trace("w", lambda name, index, mode, dayCells=dayCells: option_changed(dayCells))
 
     monthMenu = OptionMenu(calendarPane, selectedMonth, *monthChoice)
@@ -248,7 +276,8 @@ if __name__ == "__main__":
     for year in yearList:
         yearChoice[year] = year
     selectedYear = StringVar()
-    selectedYear.set(list(yearChoice.keys())[0])
+    # selectedYear.set(list(yearChoice.keys())[0])
+    selectedYear.set(today_year)
     selectedYear.trace("w", lambda name, index, mode, dayCells=dayCells: option_changed(dayCells))
 
     yearMenu = OptionMenu(calendarPane, selectedYear, *yearChoice)
@@ -283,6 +312,10 @@ if __name__ == "__main__":
         cell.bind("<Button-3>", lambda event, day_number=cell.get_day(): right_click(event, day_number))
         cell.bind("<Button-1>", lambda event, day_number=cell.get_day(): one_click(event, day_number))
         i += 1
+
+    new_label = Label(dayPane, bg=dayPane["background"],
+                      text=(selectedMonth.get(), str(daySelected), selectedYear.get()))
+    new_label.pack()
 
 
     mainloop()
