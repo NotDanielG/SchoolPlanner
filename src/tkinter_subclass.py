@@ -30,14 +30,14 @@ class MakeTaskWindow:
         self.closed_x = True
         self.mode = mode
 
-        self.__top = Toplevel(bg="#121212")
+        self.__top = Toplevel(bg="#141414")
         self.__top.geometry("400x250")
         self.__top.resizable(False, False)
         self.__top.title("Make New Task")
         self.__top.grab_set()
 
-        label_title = Label(self.__top, text="Title of Task:", bg="#424242", fg="white")
-        label_description = Label(self.__top, text="Task Description:", bg="#424242", fg="white")
+        label_title = Label(self.__top, text="Title of Task:", bg="#2e2e2e", fg="white")
+        label_description = Label(self.__top, text="Task Description:", bg="#2e2e2e", fg="white")
         label_title.grid(row=0, column=0, sticky="E", padx=(15, 5), pady=3)
         label_description.grid(row=1, column=0, sticky="NE", padx=(15, 5))
 
@@ -97,7 +97,7 @@ class MinimizableTask(Frame):
         the_dir = os.path.join(dir, "resources\smaller_min.png")
         self.image_files.append(the_dir)
 
-        self.counter = 0
+        self.counter = 1
         self.is_hidden = False
         temp = PhotoImage(file=self.image_files[self.counter])
         self.min_button = Label(self, image=temp, bg=self["background"])
@@ -108,9 +108,9 @@ class MinimizableTask(Frame):
 
         self.description = desc
         self.title = title
-        self.title_label = Label(self, text=title)
+        self.title_label = Label(self, text=title, bg="#626262", fg="white")
         self.title_label.config(pady=5)
-        self.description_label = Label(self, text=desc)
+        self.description_label = Label(self, text=desc, bg="#626262", fg="white")
         self.description_label.config(pady=5)
         self.title_label.grid(row=0, column=1, pady=5, padx=(0, 5))
         self.description_label.grid(row=1, column=1, pady=5, padx=(0, 5))

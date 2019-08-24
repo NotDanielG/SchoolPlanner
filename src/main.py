@@ -7,7 +7,6 @@ from datetime import date
 try:
     pickle_in = open("test.pickle", "rb")
     entry = pickle.load(pickle_in)
-    print(entry)
     dictionary_calendar = entry
 except EOFError:
     dictionary_calendar = dict()
@@ -81,7 +80,8 @@ def option_changed(*args):
     for label in dayPane.winfo_children():
         label.destroy()
     daySelected=1
-    new_label = Label(dayPane, bg=dayPane["background"], text=(selectedMonth.get(), str(daySelected), selectedYear.get()))
+    new_label = Label(dayPane, bg=dayPane["background"], fg="white", font=("Helvetica", 24),
+                      text=(selectedMonth.get(), str(daySelected), selectedYear.get()))
     new_label.pack()
     view_task(daySelected)
 
@@ -93,7 +93,8 @@ def one_click(event, day_number):
         for lab in dayPane.winfo_children():
             lab.destroy()
         daySelected = day_number
-        day_label = Label(dayPane, bg=dayPane["background"], text=(selectedMonth.get(), str(daySelected), selectedYear.get()))
+        day_label = Label(dayPane, bg=dayPane["background"], fg="white", font=("Helvetica", 24),
+                          text=(selectedMonth.get(), str(daySelected), selectedYear.get()))
         day_label.pack()
         for obj in task_list:
             obj.destroy()
@@ -111,7 +112,7 @@ def view_task(day_number):
         for title in dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number]:
             t = title
             d = dictionary_calendar[selectedYear.get()][selectedMonth.get()][day_number][title]
-            obj = MinimizableTask(taskPane, bg="white", width=440, desc=d, title=t)
+            obj = MinimizableTask(taskPane, bg="#484848", width=440, desc=d, title=t)
             obj.pack(anchor=W, padx=5, pady=5)
             obj.bind("<Double-1>", lambda event, day=day_number, title=obj.title, desc=d: change_task(event, day, title, desc))
             task_list.append(obj)
@@ -129,7 +130,7 @@ def change_task(event, day, title, desc):
 
 def change_memory(mode, day, title, desc):  # 0 is edit, 1 is delete
     global dictionary_calendar
-    print("Mode= ", mode, "Day= ", day)
+    # print("Mode= ", mode, "Day= ", day)
     old_title = title
     if mode == 0:
         window = MakeTaskWindow(mode=1, old_desc=desc, old_title=title)
@@ -171,7 +172,6 @@ def save(title, desc, day):
         dictionary_calendar[selectedYear.get()][selectedMonth.get()][day] = dict()
     if title not in dictionary_calendar[selectedYear.get()][selectedMonth.get()][day]:
         dictionary_calendar[selectedYear.get()][selectedMonth.get()][day][title] = desc
-    print("TEST")
     pickle_out = open("test.pickle", "wb")
     pickle.dump(dictionary_calendar, pickle_out)
     pickle_out.close()
@@ -198,21 +198,21 @@ if __name__ == "__main__":
     root.resizable(False, False)
     root.configure()
 
-    leftPane = PanedWindow(background="#212121", height=720, width=480)
-    calendarPane = PanedWindow(background="#303030", width=800)
+    leftPane = PanedWindow(background="#141414", height=720, width=480)
+    calendarPane = PanedWindow(background="#212121", width=800)
     leftPane.pack(fill=BOTH, side=LEFT)
     leftPane.pack_propagate(False)
     calendarPane.pack(fill=BOTH, side=RIGHT)
     calendarPane.pack_propagate(False)
 
-    dayPane = Frame(leftPane, bg="white", width=450, height=48)
+    dayPane = Frame(leftPane, bg="#2e2e2e", width=450, height=48)
     dayPane.place(x=5, y=5)
     dayPane.pack_propagate(False)
     daySelected = 1
-    taskPane = Frame(leftPane, bg="red", width=450, height=655)
+    taskPane = Frame(leftPane, bg="#2e2e2e", width=450, height=655)
     taskPane.place(x=5, y=58)
     taskPane.pack_propagate(False)
-    calendarFrame = Frame(calendarPane, bg="black", width=770, height=570)
+    calendarFrame = Frame(calendarPane, bg="#2e2e2e", width=770, height=570)
     calendarFrame.place(x=15, y=100)
 
     task_list = list()
@@ -227,9 +227,9 @@ if __name__ == "__main__":
 
     dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     for name in dayNames:
-        test = Frame(calendarPane, bg="red", width=110, height=25)
+        test = Frame(calendarPane, bg="#2e2e2e", width=110, height=25)
         test.place(x=calX, y=calY)
-        label = Label(test, text=name)
+        label = Label(test, text=name, bg=test["background"], fg="white")
         label.place(x=60, y=0)
         label.place(x=110-label.winfo_reqwidth())
         calX += 110
@@ -264,7 +264,6 @@ if __name__ == "__main__":
     selectedMonth = StringVar()
     # selectedMonth.set(list(monthChoice.keys())[0])
     selectedMonth.set(today_month)
-    print(selectedMonth.get())
     selectedMonth.trace("w", lambda name, index, mode, dayCells=dayCells: option_changed(dayCells))
 
     monthMenu = OptionMenu(calendarPane, selectedMonth, *monthChoice)
@@ -313,7 +312,7 @@ if __name__ == "__main__":
         cell.bind("<Button-1>", lambda event, day_number=cell.get_day(): one_click(event, day_number))
         i += 1
 
-    new_label = Label(dayPane, bg=dayPane["background"],
+    new_label = Label(dayPane, bg=dayPane["background"], fg="white", font=("Helvetica", 24),
                       text=(selectedMonth.get(), str(daySelected), selectedYear.get()))
     new_label.pack()
 
