@@ -30,7 +30,7 @@ class MakeTaskWindow:
         self.closed_x = True
         self.mode = mode
 
-        self.__top = Toplevel(bg="#141414")
+        self.__top = Toplevel(bg="#191919")
         self.__top.geometry("400x250")
         self.__top.resizable(False, False)
         self.__top.title("Make New Task")

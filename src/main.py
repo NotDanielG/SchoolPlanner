@@ -4,12 +4,12 @@ import pickle
 from tkinter_subclass import *
 from datetime import date
 
-try:
+try:  # First thing done, dictionary_calendar is a mult nested dictionary. [Years][Months][Days][Titles][Description]
     pickle_in = open("test.pickle", "rb")
     entry = pickle.load(pickle_in)
     dictionary_calendar = entry
 except EOFError:
-    dictionary_calendar = dict()
+    dictionary_calendar = dict()  # If empty, creates new dict
 
 
 def update_calender():  # repeat of option changed, aside from args
@@ -198,8 +198,8 @@ if __name__ == "__main__":
     root.resizable(False, False)
     root.configure()
 
-    leftPane = PanedWindow(background="#141414", height=720, width=480)
-    calendarPane = PanedWindow(background="#212121", width=800)
+    leftPane = PanedWindow(background="#141414", height=720, width=480)  # Where task and day selected appears
+    calendarPane = PanedWindow(background="#212121", width=800)  # Holds the calendar
     leftPane.pack(fill=BOTH, side=LEFT)
     leftPane.pack_propagate(False)
     calendarPane.pack(fill=BOTH, side=RIGHT)
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     calendarFrame = Frame(calendarPane, bg="#2e2e2e", width=770, height=570)
     calendarFrame.place(x=15, y=100)
 
-    task_list = list()
+    task_list = list()  # Not used yet
     scrollbar = Scrollbar(leftPane)
     scrollbar.pack(side=RIGHT, fill=Y)
     listbox = Listbox(leftPane, yscrollcommand=scrollbar.set)
@@ -226,7 +226,7 @@ if __name__ == "__main__":
     calY = 75
 
     dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-    for name in dayNames:
+    for name in dayNames:  # List the days on top of the calendar
         test = Frame(calendarPane, bg="#2e2e2e", width=110, height=25)
         test.place(x=calX, y=calY)
         label = Label(test, text=name, bg=test["background"], fg="white")
@@ -237,11 +237,9 @@ if __name__ == "__main__":
     count = 34
     calX = 0
     calY = 0
-    dayCells = list()
-    while count >= 0:
+    dayCells = list()  # Holds each cell/day, each cell has a day number associated with it
+    while count >= 0:  # separates the cells of the days of the week
         test = CalendarDay(calendarFrame, bg="white", borderwidth=1, width=110, height=114, relief="solid")
-        # label = Label(test, text=str(35-count))
-        # label.place(x=0, y=0)
         test.place(x=calX, y=calY)
         test.pack_propagate(False)
         dayCells.append(test)
@@ -251,18 +249,17 @@ if __name__ == "__main__":
             calX = 0
         count += -1
 
-    open_day = date.today()
+    open_day = date.today()  # Sets to current month and year
     today_month = open_day.strftime("%B")
     today_year = open_day.strftime("%Y")
 
     monthChoice = {}
     count = 1
-    for month in calendar.month_name:
+    for month in calendar.month_name:  # sets month choice for the options
         if month != "":
             monthChoice[month] = count
             count += 1
     selectedMonth = StringVar()
-    # selectedMonth.set(list(monthChoice.keys())[0])
     selectedMonth.set(today_month)
     selectedMonth.trace("w", lambda name, index, mode, dayCells=dayCells: option_changed(dayCells))
 
@@ -270,12 +267,11 @@ if __name__ == "__main__":
     monthMenu.place(x=315, y=10)
     monthMenu.config(width=10, indicator=0)
 
-    yearList = range(2019,2030)
+    yearList = range(2019, 2030)
     yearChoice = {}
-    for year in yearList:
+    for year in yearList:  # sets year choices
         yearChoice[year] = year
     selectedYear = StringVar()
-    # selectedYear.set(list(yearChoice.keys())[0])
     selectedYear.set(today_year)
     selectedYear.trace("w", lambda name, index, mode, dayCells=dayCells: option_changed(dayCells))
 
@@ -287,7 +283,7 @@ if __name__ == "__main__":
     dayList = range(1, calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))[1])
     monRange = calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))
 
-    count = monRange[0] + 1
+    count = monRange[0] + 1  # Loop sets the calendar days
     if count >= 8:
         count = 0
     i = 0
@@ -315,6 +311,5 @@ if __name__ == "__main__":
     new_label = Label(dayPane, bg=dayPane["background"], fg="white", font=("Helvetica", 24),
                       text=(selectedMonth.get(), str(daySelected), selectedYear.get()))
     new_label.pack()
-
 
     mainloop()
