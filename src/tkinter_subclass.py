@@ -132,6 +132,7 @@ class MinimizableTask(Frame):
 class ChangeTaskWindow():
     def __init__(self):
         self.top = Toplevel(bg="#424242")
+        self.top.title("Task Changer")
         self.top.geometry("240x80")
         self.top.resizable(False, False)
         self.is_delete = False

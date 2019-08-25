@@ -196,6 +196,7 @@ if __name__ == "__main__":
     root = Tk()
     root.geometry("1280x720")
     root.resizable(False, False)
+    root.title("School Planner")
     root.configure()
 
     leftPane = PanedWindow(background="#141414", height=720, width=480)  # Where task and day selected appears
