@@ -33,6 +33,9 @@ class MakeTaskWindow:
         self.__top = Toplevel(bg="#191919")
         self.__top.geometry("400x250")
         self.__top.resizable(False, False)
+        path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        icon = os.path.join(path, "resources\calendar_icon.ico")
+        self.__top.iconbitmap(icon)
         self.__top.title("Make New Task")
         self.__top.grab_set()
 
@@ -135,6 +138,9 @@ class ChangeTaskWindow():
         self.top.title("Task Changer")
         self.top.geometry("240x80")
         self.top.resizable(False, False)
+        path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        icon = os.path.join(path, "resources\calendar_icon.ico")
+        self.top.iconbitmap(icon)
         self.is_delete = False
         self.is_edit = False
         self.delete_label = Label(self.top, text="Delete Task?", bg="#424242", fg="white", pady=15)

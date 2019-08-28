@@ -197,6 +197,9 @@ if __name__ == "__main__":
     root.geometry("1280x720")
     root.resizable(False, False)
     root.title("School Planner")
+    path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    icon = os.path.join(path, "resources\calendar_icon.ico")
+    root.iconbitmap(icon)
     root.configure()
 
     leftPane = PanedWindow(background="#141414", height=720, width=480)  # Where task and day selected appears
