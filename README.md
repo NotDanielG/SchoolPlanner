@@ -4,3 +4,6 @@ Made for my personal use. I had trouble keeping track of deadlines and important
 
 ## Running Program
 Requires Python to run. Run "main.pyw" to open the program. Do not touch "test.pickle", editing it will probably mess with the program because it cannot read the data format. If it does happen, delete everything in "test.pickle". This is if you cannot redo your past edit.
+
+## Visual Example
+![calendar](resources/capture.PNG)
