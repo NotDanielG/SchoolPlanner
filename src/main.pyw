@@ -288,7 +288,7 @@ if __name__ == "__main__":
     monRange = calendar.monthrange(int(selectedYear.get()), int(monthChoice[selectedMonth.get()]))
 
     count = monRange[0] + 1  # Loop sets the calendar days
-    if count >= 8:
+    if count >= 7:
         count = 0
     i = 0
     start = False
